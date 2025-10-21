@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Store.G02.Domain.Contracts;
 using Store.G02.persistence;
 using Store.G02.persistence.Data.Contexts;
+using Store.G02.Services;
+using Store.G02.Services.Abstractions;
+using Store.G02.Services.Mapping.Products;
 using System.Threading.Tasks;
 
 namespace Store.G02.Web
@@ -26,6 +29,10 @@ namespace Store.G02.Web
             });
 
             builder.Services.AddScoped<IDbInitializer, DbIntializer>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IServiceManager, ServiceManager>();
+            builder.Services.AddAutoMapper(M => M.AddProfile(new ProductProfile()));
+
 
             var app = builder.Build();
 
