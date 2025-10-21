@@ -31,7 +31,7 @@ namespace Store.G02.Web
             builder.Services.AddScoped<IDbInitializer, DbIntializer>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IServiceManager, ServiceManager>();
-            builder.Services.AddAutoMapper(M => M.AddProfile(new ProductProfile()));
+            builder.Services.AddAutoMapper(M => M.AddProfile(new ProductProfile(builder.Configuration)));
 
 
             var app = builder.Build();
@@ -45,6 +45,7 @@ namespace Store.G02.Web
             #endregion
 
 
+            app.UseStaticFiles();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
