@@ -18,14 +18,29 @@ namespace Store.G02.persistence
         public static IQueryable<TEntity> GetQuery<TKey, TEntity>(IQueryable<TEntity> inputQuery ,ISpecifications<TKey, TEntity> spec) where TEntity : BaseEntity<TKey>
         {
             var query = inputQuery; // _context.Products
+
+            // Check Criteria To Filter
+
             if (spec.Criteria is not null)
             {
                 query = query.Where(spec.Criteria); // _context.Products.Where(P => P.id == 12);
             }
 
-            // _context.Products.Where(P => P.id == 12).Include(P => P.Brand);
-            // _context.Products.Where(P => P.id == 12).Include(P => P.Brand).Include(P => P.Type);
-            query = spec.Includes.Aggregate(query, (query, IncludeExpression) => query.Include(IncludeExpression));
+            // Check Expression Which TO Order By With
+
+            if (spec.OrderBy is not null)
+            {
+                query = query.OrderBy(spec.OrderBy);
+            }
+            else if (spec.OrderByDescending is not null)
+            {
+                query = query.OrderByDescending(spec.OrderByDescending);
+            }
+            
+
+                // _context.Products.Where(P => P.id == 12).Include(P => P.Brand);
+                // _context.Products.Where(P => P.id == 12).Include(P => P.Brand).Include(P => P.Type);
+                query = spec.Includes.Aggregate(query, (query, IncludeExpression) => query.Include(IncludeExpression));
 
             return query;
         }
