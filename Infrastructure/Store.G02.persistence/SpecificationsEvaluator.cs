@@ -36,11 +36,15 @@ namespace Store.G02.persistence
             {
                 query = query.OrderByDescending(spec.OrderByDescending);
             }
-            
 
-                // _context.Products.Where(P => P.id == 12).Include(P => P.Brand);
-                // _context.Products.Where(P => P.id == 12).Include(P => P.Brand).Include(P => P.Type);
-                query = spec.Includes.Aggregate(query, (query, IncludeExpression) => query.Include(IncludeExpression));
+            if (spec.IsPagination)
+            { 
+                query = query.Skip(spec.Skip).Take(spec.Take);
+            }
+
+            // _context.Products.Where(P => P.id == 12).Include(P => P.Brand);
+            // _context.Products.Where(P => P.id == 12).Include(P => P.Brand).Include(P => P.Type);
+            query = spec.Includes.Aggregate(query, (query, IncludeExpression) => query.Include(IncludeExpression));
 
             return query;
         }
