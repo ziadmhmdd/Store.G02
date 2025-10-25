@@ -13,6 +13,7 @@ namespace Store.G02.Domain.Contracts
         Task<IEnumerable<TEntity>> GetAllAsync(ISpecifications<TKey, TEntity> spec ,bool changeTracker = false);
         Task<TEntity?> GetAsync(TKey key);
         Task<TEntity?> GetAsync(ISpecifications<TKey, TEntity> specification);
+        Task<int> CountAsync(ISpecifications<TKey, TEntity> specification);
         Task AddAsync(TEntity entity);
         void Update(TEntity entity);
         void Delete(TEntity entity);
