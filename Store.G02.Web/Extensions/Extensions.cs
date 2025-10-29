@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Store.G02.Domain.Contracts;
+using Store.G02.persistence;
+using Store.G02.Services;
 using Store.G02.Shared.ErrorsModels;
 using Store.G02.Web.Middlewares;
 
@@ -7,36 +9,21 @@ namespace Store.G02.Web.Extensions
 {
     public static class Extensions
     {
+        #region  Before Build
         public static IServiceCollection RegisterAllServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddSwaggerServices();  // Swagger
+            services.AddInfrastructureServices(configuration);  // DataBase
+            services.AddApplicationServices(configuration); // Services
 
-            services.AddBuiltInServices();
-            services.AddSwaggerServices();
-            
-
-
-            services.AddInfrastructureServices(configuration);
-            services.AddApplicationServices(configuration);
-
-
-            services.ConfigureServices();
+            services.ConfigureServices(); // Api Config
 
             return services;
 
         }
-
-        private static IServiceCollection AddBuiltInServices(this IServiceCollection services)
-        {
-            
-
-            services.AddControllers();
-
-            return services;
-        }
-
         private static IServiceCollection AddSwaggerServices(this IServiceCollection services)
         {
-
+            services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
@@ -68,8 +55,10 @@ namespace Store.G02.Web.Extensions
 
             return services;
         }
+        #endregion
 
 
+        #region After Build
         public static async Task<WebApplication> ConfigureMiddlewares(this WebApplication app)
         {
 
@@ -105,12 +94,13 @@ namespace Store.G02.Web.Extensions
 
             return app;
         }
-        private static  WebApplication UseGlobalErrorHandling(this WebApplication app)
+        private static WebApplication UseGlobalErrorHandling(this WebApplication app)
         {
             app.UseMiddleware<GlobalErrorHandlingMiddleware>();
 
             return app;
         }
+        #endregion
 
 
     }
