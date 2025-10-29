@@ -14,7 +14,7 @@ namespace Store.G02.Presentation
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ProductController(IServiceManager _serviceManager) : ControllerBase
+    public class ProductsController(IServiceManager _serviceManager) : ControllerBase
     {
 
         // priceasc
