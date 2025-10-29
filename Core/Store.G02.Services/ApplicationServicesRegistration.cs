@@ -16,6 +16,7 @@ namespace Store.G02.Services
         {
             services.AddScoped<IServiceManager, ServiceManager>();
             services.AddAutoMapper(M => M.AddProfile(new ProductProfile(configuration)));
+            services.AddAutoMapper(M => M.AddProfile(new BasketProfile()));
             return services;
         }
     }

@@ -10,5 +10,7 @@ namespace Store.G02.Services.Abstractions
     public interface IServiceManager
     {
         IProductService ProductService { get; }
+        IBasketService BasketService { get; }
+        ICacheService CacheService { get; }
     }
 }
