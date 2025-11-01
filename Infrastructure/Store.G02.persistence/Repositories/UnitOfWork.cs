@@ -1,7 +1,6 @@
 ﻿using Store.G02.Domain.Contracts;
 using Store.G02.Domain.Entities;
 using Store.G02.persistence.Data.Contexts;
-using Store.G02.persistence.Repositories;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Store.G02.persistence
+namespace Store.G02.persistence.Repositories
 {
     public class UnitOfWork(StoreDbContext _context) : IUnitOfWork
     {

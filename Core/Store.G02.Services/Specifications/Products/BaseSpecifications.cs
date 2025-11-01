@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Store.G02.Services.Specifications
+namespace Store.G02.Services.Specifications.Products
 {
     public class BaseSpecifications<TKey, TEntity> : ISpecifications<TKey, TEntity> where TEntity : BaseEntity<TKey>
     {
