@@ -1,7 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Store.G02.Domain.Contracts;
+using Store.G02.Domain.Entities.Identity;
 using Store.G02.Domain.Entities.Products;
 using Store.G02.persistence.Data.Contexts;
+using Store.G02.persistence.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +12,19 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Store.G02.persistence
+namespace Store.G02.persistence.Repositories
 {
 
     // CLR 
-    public class DbIntializer(StoreDbContext _context) : IDbInitializer
+    public class DbIntializer(StoreDbContext _context, 
+        StoreIdentityDbContext identityDbContext, 
+        UserManager<AppUser> userManager, 
+        RoleManager<IdentityRole> roleManager) : IDbInitializer
     {
-        
+        private readonly StoreIdentityDbContext identityDbContext = identityDbContext;
+        private readonly UserManager<AppUser> userManager = userManager;
+        private readonly RoleManager<IdentityRole> roleManager = roleManager;
+
         public async Task InitializeAsync()
         {
             // Create Db
@@ -87,6 +96,51 @@ namespace Store.G02.persistence
             await _context.SaveChangesAsync();
         }
 
+        public async Task InitializeIdentityAsync()
+        {
+            // Create Database If It dosent Exists && Apply To Any Pending Migrations
+            if (identityDbContext.Database.GetPendingMigrations().Any())
+            {
+                await identityDbContext.Database.MigrateAsync();
+            }
 
+            if (!roleManager.Roles.Any())
+            {
+                await roleManager.CreateAsync(new IdentityRole()
+                {
+                    Name = "Admin"
+                });
+                await roleManager.CreateAsync(new IdentityRole()
+                {
+                    Name = "SuperAdmin"
+                });
+            }
+
+            // Seeding
+            if (!userManager.Users.Any())
+            {
+                var superAdminUser = new AppUser()
+                {
+                    DisplayName = "SuperAdmin",
+                    Email = "SuperAdmin@gmail.com",
+                    UserName = "SuperAdmin",
+                    PhoneNumber = "0123456789",
+                };
+                var adminUser = new AppUser()
+                {
+                    DisplayName = "SuperAdmin",
+                    Email = "SuperAdmin@gmail.com",
+                    UserName = "SuperAdmin",
+                    PhoneNumber = "0123456789",
+                };
+
+                await userManager.CreateAsync(superAdminUser, "P@ssw0rd");
+                await userManager.CreateAsync(adminUser, "P@ssw0rd");
+
+                await userManager.AddToRoleAsync(superAdminUser, "SuperAdmin");
+                await userManager.AddToRoleAsync(adminUser, "Admin");
+
+            }
+        }
     }
 }
