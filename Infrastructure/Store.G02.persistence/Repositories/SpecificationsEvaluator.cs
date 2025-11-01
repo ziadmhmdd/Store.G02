@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Store.G02.persistence
+namespace Store.G02.persistence.Repositories
 {
     public static class SpecificationsEvaluator
     {

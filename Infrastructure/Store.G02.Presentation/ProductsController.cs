@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Store.G02.Presentation.Attributes;
 using Store.G02.Services.Abstractions;
@@ -38,6 +39,7 @@ namespace Store.G02.Presentation
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorDetails))]
         [Cache(100)]
+        [Authorize]
         public async Task<ActionResult<ProductResponse>> GetProductById(int? id)
         {
             if(id is null)return BadRequest();

@@ -10,5 +10,6 @@ namespace Store.G02.Shared.ErrorsModels
     {
         public int StatusCode { get; set; }
         public string ErrorMessage { get; set; }
+        public IEnumerable<string>? Errors { get; set; }
     }
 }
