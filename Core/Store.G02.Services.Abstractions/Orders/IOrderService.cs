@@ -13,7 +13,7 @@ namespace Store.G02.Services.Abstractions.Orders
 
         Task<IEnumerable<DeliveryMethodResponse>> GetAllDeliveryMethodsAsync();
 
-        Task<OrderResponse?> GetOrderByIdForSpecificUserAsync(Guid id, string UserEmail);
-        Task<IEnumerable<OrderResponse>> GetOrdersForSpecificUserAsync(string UserEmail);
+        Task<OrderResponse?> GetOrderByIdForSpecificUserAsync(Guid id, string userEmail);
+        Task<IEnumerable<OrderResponse>> GetOrdersForSpecificUserAsync(string userEmail);
     }
 }
