@@ -4,6 +4,7 @@ using Store.G02.Domain.Entities.Orders;
 using Store.G02.Domain.Entities.Products;
 using Store.G02.Domain.Exceptions;
 using Store.G02.Services.Abstractions.Orders;
+using Store.G02.Services.Specifications.Orders;
 using Store.G02.Shared.Dtos.Orders;
 using System;
 using System.Collections.Generic;
@@ -67,19 +68,24 @@ namespace Store.G02.Services.Orders
             return _mapper.Map<OrderResponse>(order);
         }
 
-        public Task<IEnumerable<DeliveryMethodResponse>> GetAllDeliveryMethodsAsync()
+        public async Task<IEnumerable<DeliveryMethodResponse>> GetAllDeliveryMethodsAsync()
         {
-            throw new NotImplementedException();
+            var deliveryMethods = await _unitOfWork.GetRepository<int, DeliveryMethod>().GetAllAsync();
+            return _mapper.Map<IEnumerable<DeliveryMethodResponse>>(deliveryMethods);
         }
 
-        public Task<OrderResponse?> GetOrderByIdForSpecificUserAsync(Guid id, string UserEmail)
+        public async Task<OrderResponse?> GetOrderByIdForSpecificUserAsync(Guid id, string userEmail)
         {
-            throw new NotImplementedException();
+            var spec = new OrderSpecification(id, userEmail);
+            var order = await _unitOfWork.GetRepository<Guid, Order>().GetAsync(spec);
+            return _mapper.Map<OrderResponse>(order);
         }
 
-        public Task<IEnumerable<OrderResponse>> GetOrdersForSpecificUserAsync(string UserEmail)
+        public async Task<IEnumerable<OrderResponse>> GetOrdersForSpecificUserAsync(string userEmail)
         {
-            throw new NotImplementedException();
+            var spec = new OrderSpecification(userEmail);
+            var order = await _unitOfWork.GetRepository<Guid, Order>().GetAllAsync(spec);
+            return _mapper.Map<IEnumerable<OrderResponse>>(order);
         }
     }
 }
