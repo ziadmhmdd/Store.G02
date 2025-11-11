@@ -10,5 +10,9 @@ namespace Store.G02.Domain.Entities.Products
     {
         public string Id { get; set; }
         public IEnumerable<BasketItem> Items { get; set; }
+        public int? DeliveryMethodId { get; set; }
+        public string? PaymentintentId { get; set; }
+        public string? ClientSecret { get; set; }
+        public decimal? ShipingCost { get; set; }
     }
 }

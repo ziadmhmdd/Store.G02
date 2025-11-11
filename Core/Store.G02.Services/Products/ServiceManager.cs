@@ -8,6 +8,7 @@ using Store.G02.Services.Abstractions;
 using Store.G02.Services.Abstractions.Orders;
 using Store.G02.Services.Abstractions.Products;
 using Store.G02.Services.Orders;
+using Store.G02.Services.Payments;
 using Store.G02.Shared;
 using System;
 using System.Collections.Generic;
@@ -22,14 +23,17 @@ namespace Store.G02.Services.Products
         IBasketRepository _basketRepository, 
         ICacheRepository _cacheRepository, 
         UserManager<AppUser> userManager,
-        IOptions<JwtOptions> options
+        IOptions<JwtOptions> options,
+        IConfiguration configuration
         ) : IServiceManager
     {
         public IProductService ProductService { get; } = new ProductService(_unitOfWork, _mapper);
         public IBasketService BasketService { get; } = new BasketService(_basketRepository, _mapper);
         public ICacheService CacheService { get; } = new CacheService(_cacheRepository);
-        public IAuthService AuthService { get; } = new AuthService(userManager, options);
+        public IAuthService AuthService { get; } = new AuthService(userManager, options, _mapper);
 
         public IOrderService OrderService { get; } = new OrderService(_unitOfWork, _mapper, _basketRepository);
+
+        public IPaymentService PaymentService { get; } = new PaymentService(_basketRepository, _unitOfWork, configuration, _mapper);
     }
 }
