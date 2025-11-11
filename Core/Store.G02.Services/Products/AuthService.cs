@@ -15,17 +15,70 @@ using static System.Net.WebRequestMethods;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Store.G02.Shared;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace Store.G02.Services.Products
 {
-    public class AuthService(UserManager<AppUser> userManager, IOptions<JwtOptions> options) : IAuthService
+    public class AuthService(UserManager<AppUser> _userManager, IOptions<JwtOptions> options, IMapper _mapper) : IAuthService
     {
+        public async Task<bool> CheckEmailExistsAsync(string email)
+        {
+            return await _userManager.FindByEmailAsync(email) != null;
+        }
+
+        public async Task<UserResultDto> GetCurrentUserAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is null) throw new UserNotFoundException(email);
+
+            return new UserResultDto()
+            {
+                DisplayName = user.DisplayName,
+                Email = user.Email,
+                Token = await GenerateJwtTokenAsync(user)
+            };
+        }
+
+        public async Task<AddressDto?> GetCurrentUserAddressAsync(string email)
+        {
+            //_userManager.FindByEmailAsync(email); // This Function Dont Load The Navigational Property 
+            var user = await _userManager.Users.Include(U => U.Address).FirstOrDefaultAsync(U => U.Email.ToLower() == email.ToLower());
+            if (user is null) throw new UserNotFoundException(email);
+            return _mapper.Map<AddressDto>(user.Address);
+        }
+
+        public async Task<AddressDto?> UpdateCurrentUserAddressAsync(AddressDto request, string email)
+        {
+            var user = await _userManager.Users.Include(U => U.Address).FirstOrDefaultAsync(U => U.Email.ToLower() == email.ToLower());
+            if (user is null) throw new UserNotFoundException(email);
+
+            if (user.Address is null)
+            {
+                // Create new Address
+                user.Address = _mapper.Map<Address>(request);
+            }
+            else
+            {
+                // Update The Old Address
+                user.Address.FirstName = request.FirstName;
+                user.Address.LastName = request.LastName;
+                user.Address.City = request.City;
+                user.Address.Street = request.Street;
+                user.Address.Country = request.Country;
+            }
+
+            await _userManager.UpdateAsync(user);
+
+            return _mapper.Map<AddressDto>(user.Address);
+        }
+
         public async Task<UserResultDto> LoginAsync(LoginDto loginDto)
         {
-            var user = await userManager.FindByEmailAsync(loginDto.Email);
+            var user = await _userManager.FindByEmailAsync(loginDto.Email);
             if (user is null) throw new UnAuthorizedException();
 
-            var flag = await userManager.CheckPasswordAsync(user, loginDto.Password);
+            var flag = await _userManager.CheckPasswordAsync(user, loginDto.Password);
             if (!flag) throw new UnAuthorizedException();
 
             return new UserResultDto()
@@ -45,7 +98,7 @@ namespace Store.G02.Services.Products
                 UserName = registerDto.UserName,
                 PhoneNumber = registerDto.PhoneNumber,
             };
-            var result = await userManager.CreateAsync(user, registerDto.Password);
+            var result = await _userManager.CreateAsync(user, registerDto.Password);
             if (!result.Succeeded)
             {
                 var errors = result.Errors.Select(error => error.Description);
@@ -75,7 +128,7 @@ namespace Store.G02.Services.Products
                 new Claim(ClaimTypes.Email, user.Email),
             };
 
-            var roles = await userManager.GetRolesAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
             foreach (var role in roles)
             {
                 authClaim.Add(new Claim(ClaimTypes.Role, role));
