@@ -56,9 +56,18 @@ namespace Store.G02.Services.Orders
 
             var subTotal =  orderItems.Sum(OI => OI.Price * OI.Quantity);
 
+            // Check Order Exists
+
+            var spec = new OrderWithPaymentIntentSpecifications(basket.PaymentintentId);
+
+            var existsOrder = await _unitOfWork.GetRepository<Guid, Order>().GetAsync(spec);
+
+            if (existsOrder is not null)
+                _unitOfWork.GetRepository<Guid, Order>().Delete(existsOrder);
+
             // Create Order
 
-            var order = new Order(userEmail, orderAddress, deliveryMethod, orderItems, subTotal);
+            var order = new Order(userEmail, orderAddress, deliveryMethod, orderItems, subTotal, basket.PaymentintentId);
 
             // Add Order In Database
             await _unitOfWork.GetRepository<Guid, Order>().AddAsync(order);

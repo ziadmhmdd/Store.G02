@@ -30,7 +30,13 @@ namespace Store.G02.Web.Extensions
 
             services.ConfigureServices(); // Api Config
 
-
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                { 
+                    policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                });
+            });
 
             return services;
 
@@ -122,6 +128,8 @@ namespace Store.G02.Web.Extensions
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors("AllowAll");
 
             app.UseAuthentication();
             app.UseAuthorization();
